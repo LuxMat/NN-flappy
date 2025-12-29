@@ -6,8 +6,6 @@ from defs import *
 class Pipe():
 
     def __init__(self, gameDisplay, x, y, pipe_type):
-        print("x:", x, type(x))
-        print("y:", y, type(y))
 
         self.gameDisplay = gameDisplay
         self.state = PIPE_MOVING
@@ -17,7 +15,7 @@ class Pipe():
         if pipe_type == PIPE_UPPER:
             y = y - self.rect.height
         self.set_position(x, y)
-        print('PIPE_MOVING')
+        #print('PIPE_MOVING')
     
     def set_position(self, x, y):
         self.rect.left = x
@@ -33,7 +31,7 @@ class Pipe():
     def check_status(self):
         if self.rect.right < 0:
             self.state = PIPE_DONE
-            print('PIPE_DONE')
+            #print('PIPE_DONE')
 
     def update(self, dt):
         if self.state == PIPE_MOVING:
