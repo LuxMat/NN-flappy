@@ -1,7 +1,7 @@
 import pygame
 from defs import * 
 from pipe import PipeCollection
-from bird import BirdCollection
+from bird import Bird
 
 
 def update_data_label(data, title, font, gameDisplay, x, y):
@@ -9,15 +9,13 @@ def update_data_label(data, title, font, gameDisplay, x, y):
     gameDisplay.blit(label, (x, y))
     return y
 
-def update_data_labels(dt, font, gameDisplay, num_iterations, num_alive, game_time):
+def update_data_labels(dt, font, gameDisplay, num_iterations, game_time):
     y_pos = 10
     gap = 20
     x_pos = 10
     y_pos = update_data_label(round(1000/dt, 2), 'FPS', font, gameDisplay, x_pos, y_pos + gap)
     y_pos = update_data_label(round(game_time/1000, 2), 'Game time', font, gameDisplay, x_pos, y_pos + gap)
     y_pos = update_data_label(num_iterations, 'Iterations', font, gameDisplay, x_pos, y_pos + gap)
-    y_pos = update_data_label(num_alive, 'Alive', font, gameDisplay, x_pos, y_pos + gap)
-
 
 def run_game():
     pygame.init()
@@ -28,7 +26,7 @@ def run_game():
     bgImg = pygame.image.load(BG_FILENAME)
     pipes = PipeCollection(gameDisplay)
     pipes.create_new_set()
-    birds = BirdCollection(gameDisplay)
+    bird = Bird(gameDisplay)
 
     
 
@@ -45,24 +43,29 @@ def run_game():
         
         dt = clock.tick(FPS)
         game_time += dt
+
         gameDisplay.blit(bgImg, (0, 0))
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
-                running = False
+                if event.key == pygame.K_SPACE:
+                    bird.jump()
+                else:
+                    running = False
              
         pipes.update(dt)
-        num_alive = birds.update(dt, pipes.pipes)
+        bird.update(dt, pipes.pipes)
 
-        if num_alive == 0:
+        if bird.state == BIRD_DEAD:
             pipes.create_new_set()
             game_time = 0
-            birds.evolve_population()
+            bird = Bird(gameDisplay)
             num_iterations += 1
 
-        update_data_labels(dt, label_font, gameDisplay, num_iterations, num_alive, game_time)
+        update_data_labels(dt, label_font, gameDisplay, num_iterations, game_time)
         pygame.display.update()
 
 if __name__ == "__main__":
